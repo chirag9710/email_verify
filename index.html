@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Email Verified!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <style>
     body {
       background: #f3f6fa;
@@ -15,19 +17,19 @@
       font-family: "Segoe UI", Arial, sans-serif;
     }
     .container {
-  background: #fff;
-  padding: 2rem 1.5rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  text-align: center;
-  max-width: 350px;
-  overflow: hidden;
-     padding-bottom: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+      background: #fff;
+      padding: 2rem 1.5rem;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-align: center;
+      max-width: 350px;
+      overflow: hidden;
+      padding-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       height: 100px;
-}
+    }
     .container img {
       width: 80px;
       margin-bottom: 0.8rem;
@@ -68,8 +70,38 @@
 </head>
 <body>
   <div class="container">
-    <p class="verified-message">Great, your email has been verified.</p>
-    <p>You can continue to the App.</p>
+    <p class="verified-message" id="statusMessage">Verifying your email...</p>
+    <p id="extraMessage">Please wait a moment.</p>
   </div>
+
+  <script>
+    // Replace with your actual Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpjRgMl9lYlp_ePJaNUmP75FFWnF95Y8U",
+      authDomain: "todoappnov.firebaseapp.com",
+      projectId: "todoappnov"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const params = new URLSearchParams(window.location.search);
+    const oobCode = params.get('oobCode');
+
+    if (oobCode) {
+      auth.applyActionCode(oobCode)
+        .then(() => {
+          document.getElementById('statusMessage').innerText = "✅ Great, your email has been verified.";
+          document.getElementById('extraMessage').innerText = "You can now continue using the app.";
+        })
+        .catch((error) => {
+          document.getElementById('statusMessage').innerText = "❌ Verification failed.";
+          document.getElementById('extraMessage').innerText = error.message || "Something went wrong.";
+        });
+    } else {
+      document.getElementById('statusMessage').innerText = "❌ Invalid verification link.";
+      document.getElementById('extraMessage').innerText = "Please try again.";
+    }
+  </script>
 </body>
 </html>
